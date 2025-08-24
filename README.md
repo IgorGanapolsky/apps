@@ -104,13 +104,20 @@ eas build:configure
 3. Build for iOS:
 
 ```bash
-eas build --platform ios
+eas build --platform ios --profile production
 ```
 
 4. Build for Android:
 
 ```bash
-eas build --platform android
+eas build --platform android --profile production
+```
+
+5. Submit to stores (after first credential setup):
+
+```bash
+eas submit --platform ios --profile production
+.eas submit --platform android --profile production
 ```
 
 ## App Store Configuration
@@ -124,7 +131,7 @@ eas build --platform android
 ### Apple App Store
 
 - Bundle ID: `com.securepass.generator`
-- Deployment target: iOS 13.0+
+- Deployment target: iOS 15.1+
 
 ## Firebase Setup (Required for production)
 
@@ -158,6 +165,29 @@ Copy `.env.example` to `.env` and set values. Key settings:
 - EAS_PROJECT_ID
 - ADMOB_APP_ID_IOS, ADMOB_APP_ID_ANDROID
 - SENTRY_DSN
+
+## CI/CD & Autonomous Ops
+
+- Local hourly autofix: LaunchAgent runs `scripts/autofix-local.sh` to format/lint, commit, and push.
+- Cloud hourly autofix: `.github/workflows/autofix.yml` runs Prettier + ESLint and auto-commits.
+- CI checks: `.github/workflows/ci.yml` runs tsc, expo-doctor, lint, and prettier on PRs.
+- OTA updates (optional): use EAS Update to ship JS-only fixes to channels.
+
+### Release flow (fully scripted)
+
+```bash
+# 1) Set env vars in .env or CI secrets (bundle IDs, EAS_PROJECT_ID, AdMob, Sentry)
+# 2) Build
+EAS_NO_VCS=1 eas build --platform ios --profile production
+EAS_NO_VCS=1 eas build --platform android --profile production
+# 3) Submit
+EAS_NO_VCS=1 eas submit --platform ios --profile production
+EAS_NO_VCS=1 eas submit --platform android --profile production
+```
+
+Notes:
+- Manage credentials via EAS on first run; subsequent runs use stored credentials.
+- For multiple apps, keep a repo per app; parameterize via `app.config.ts` + `.env`.
 
 ## Testing
 
