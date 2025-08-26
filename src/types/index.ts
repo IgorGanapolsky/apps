@@ -1,76 +1,31 @@
-export interface PasswordOptions {
-  length: number;
-  includeUppercase: boolean;
-  includeLowercase: boolean;
-  includeNumbers: boolean;
-  includeSymbols: boolean;
-  excludeAmbiguous: boolean;
-  customCharacters?: string;
-  excludeCharacters?: string;
-}
-
-export interface PasswordEntry {
-  id: string;
-  password: string;
-  timestamp: Date;
-  strength: PasswordStrength;
-  options: PasswordOptions;
-  isFavorite?: boolean;
-}
-
-export enum PasswordStrength {
-  VeryWeak = 0,
-  Weak = 1,
-  Fair = 2,
-  Good = 3,
-  Strong = 4,
-  VeryStrong = 5,
-}
-
+// Example types for your app
 export interface User {
   id: string;
   email: string;
   displayName?: string;
-  isPremium: boolean;
-  premiumExpiresAt?: Date;
-  trialUsed: boolean;
-  passwordCount: number;
   createdAt: Date;
-  lastSyncAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface UserPreferences {
   theme: "light" | "dark" | "system";
-  defaultOptions: PasswordOptions;
-  autoSave: boolean;
-  hapticFeedback: boolean;
-  showPasswordStrength: boolean;
-  quickCopyEnabled: boolean;
-}
-
-export interface AdConfig {
-  showBanner: boolean;
-  interstitialFrequency: number;
-  lastInterstitialShown?: Date;
-  passwordsGeneratedSinceAd: number;
-}
-
-export interface PricingTier {
-  id: string;
-  price: number;
-  currency: string;
-  features: string[];
-  isActive: boolean;
+  notifications: boolean;
+  language: string;
 }
 
 export interface AppState {
   user: User | null;
   preferences: UserPreferences;
-  passwordHistory: PasswordEntry[];
   isLoading: boolean;
   error: string | null;
-  adConfig: AdConfig;
-  currentPricingTier?: PricingTier;
+}
+
+// Add your app-specific types here
+export interface ExampleItem {
+  id: string;
+  title: string;
+  description?: string;
+  createdAt: Date;
 }
 
 export interface ThemeColors {
