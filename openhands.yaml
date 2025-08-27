@@ -1,0 +1,9 @@
+# Optional OpenHands configuration
+# NOTE: This is a minimal placeholder. Consult the OpenHands docs for the full schema.
+# Environment variables (OPENHANDS_PROVIDER, OPENHANDS_MODEL, OPENAI_API_KEY) take precedence.
+
+provider: openai
+model: gpt-4o-mini
+nonInteractive: true
+# workspace: .   # Typically the repo root; we pass this via CLI in workflows
+

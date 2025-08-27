@@ -1,4 +1,4 @@
-#!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
-
-npx lint-staged
+#!/usr/bin/env sh
+# Husky v9+ hook (no sourcing husky.sh)
+# Use --no to prevent npx from installing packages interactively
+npx --no -- lint-staged

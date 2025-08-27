@@ -1,0 +1,91 @@
+name: OpenHands (AI Assistant)
+
+on:
+  workflow_dispatch:
+    inputs:
+      goal:
+        description: "Goal for OpenHands to accomplish"
+        required: true
+        type: string
+  pull_request:
+    types: [opened, reopened, synchronize, labeled]
+
+jobs:
+  run-openhands:
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'ai:run'))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Create venv and install OpenHands
+        run: |
+          python -m venv .venv
+          . .venv/bin/activate
+          python -m pip install --upgrade pip
+          pip install --quiet --disable-pip-version-check openhands
+
+      - name: Show OpenHands help (for debugging)
+        run: |
+          . .venv/bin/activate
+          set -x
+          openhands --help || python -m openhands --help || true
+
+      - name: Run OpenHands
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENHANDS_PROVIDER: ${{ vars.OPENHANDS_PROVIDER || 'openai' }}
+          OPENHANDS_MODEL: ${{ vars.OPENHANDS_MODEL || 'gpt-4o-mini' }}
+        run: |
+          . .venv/bin/activate
+          set -euo pipefail
+
+          # If no provider key is set, skip to avoid failing the workflow.
+          if [ -z "${OPENAI_API_KEY:-}" ]; then
+            echo "OPENAI_API_KEY is not set. Skipping OpenHands run."
+            exit 0
+          fi
+
+          GOAL_INPUT="${{ github.event.inputs.goal }}"
+          if [ -z "$GOAL_INPUT" ] && [ "${{ github.event_name }}" = "pull_request" ]; then
+            GOAL_INPUT="Review and improve this pull request; fix lints/formatting and propose code quality improvements."
+          fi
+          echo "OpenHands goal: $GOAL_INPUT"
+
+          if openhands run --non-interactive --goal "$GOAL_INPUT" --repo .; then
+            echo "OpenHands run completed (form 1)"
+          elif openhands --non-interactive --goal "$GOAL_INPUT" --repo .; then
+            echo "OpenHands run completed (form 2)"
+          elif python -m openhands run --non-interactive --goal "$GOAL_INPUT" --repo .; then
+            echo "OpenHands run completed (form 3)"
+          elif python -m openhands --non-interactive --goal "$GOAL_INPUT" --repo .; then
+            echo "OpenHands run completed (form 4)"
+          else
+            echo "Failed to run OpenHands with known invocation patterns." >&2
+            exit 1
+          fi
+
+      - name: Commit and push changes
+        run: |
+          if ! git diff --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git commit -m "chore(ai): OpenHands applied changes"
+            git push
+          else
+            echo "No changes to commit."
+          fi
+

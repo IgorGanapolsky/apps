@@ -205,3 +205,48 @@ Built with:
 ---
 
 **Need help?** Check out the [Expo documentation](https://docs.expo.dev/) or [React Native documentation](https://reactnative.dev/docs/getting-started)
+
+---
+
+## 🤖 OpenHands (AI Assistant)
+
+Run OpenHands locally and in GitHub Actions to automate refactors, fixes, and improvements.
+
+### Local usage
+
+1) Create your env file:
+
+```bash
+cp .env.example .env
+# Add your API key(s)
+```
+
+2) Run OpenHands via npm:
+
+```bash
+npm run ai -- --help
+npm run ai -- run --non-interactive --goal "Refactor the codebase to improve readability" --repo .
+```
+
+- The wrapper prefers Docker (ghcr.io/all-hands-ai/openhands:latest) and falls back to a local Python venv.
+- Defaults: `OPENHANDS_PROVIDER=openai`, `OPENHANDS_MODEL=gpt-4o-mini`. Set in `.env` or your shell.
+- Requires a provider API key (e.g., `OPENAI_API_KEY`).
+
+### GitHub Actions
+
+- Workflow: `.github/workflows/openhands.yml`
+- Triggers:
+  - Manually via Actions tab: "OpenHands (AI Assistant)" with an input goal
+  - On PRs with label `ai:run`
+
+The workflow installs OpenHands in a venv and attempts common CLI invocation forms. If it changes files, it will auto-commit using `github-actions[bot]`.
+
+### Required secrets
+
+- `OPENAI_API_KEY` (Repository → Settings → Secrets and variables → Actions → New repository secret)
+
+### Notes
+
+- Pre-commit hooks (Husky + lint-staged) remain unchanged and continue to run on your commits.
+- The wrapper script lives at `scripts/openhands.sh`.
+- Optional config: `openhands.yaml` (minimal placeholder; environment variables take precedence).
