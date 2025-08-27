@@ -1,10 +1,22 @@
-# SecurePass - Password Generator
+# React Native Expo Template
 
-A professional password generator React Native Expo app with Material Design, ready for deployment to Google Play Store and Apple App Store.
+A minimal, production-ready template for React Native apps using Expo SDK 53.
 
-## Features
+## Quick Start
 
-### Core Features (Free)
+1) Click "Use this template" on GitHub
+2) Clone your new repository
+3) Install dependencies
+
+```
+npm install
+```
+
+4) Start development
+
+```
+npm start
+```
 
 - ✨ Clean Material Design interface with gradient background
 - 🔐 Password generation with customizable length (8-50 characters)
@@ -35,7 +47,24 @@ A professional password generator React Native Expo app with Material Design, re
 - Firebase (ready for integration)
 - Google AdMob (ready for integration)
 
-## Getting Started
+## What's Included
+- Expo SDK 53 with React 19 and React Native 0.79.5
+- TypeScript configuration
+- ESLint + Prettier with Husky pre-commit hooks
+- GitHub Actions CI pipeline
+- Node 20 configuration
+
+## Scripts
+- npm start — Start Expo development server
+- npm run ios — Run on iOS simulator
+- npm run android — Run on Android emulator
+- npm run web — Run in web browser
+- npm run lint — Run ESLint
+- npm run fmt — Check Prettier formatting
+- npm run type-check — Run TypeScript compiler checks
+
+## Cursor IDE
+See docs/Cursor.md for AI-assisted development guidance.
 
 ### Prerequisites
 
