@@ -36,10 +36,3 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
-# Python virtual env for OpenHands
-.venv/
-
-# OpenHands artifacts
-.openhands/
-.openhands-cache/
-openhands.log

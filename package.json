@@ -12,8 +12,6 @@
     "fmt": "prettier --check .",
     "fmt:fix": "prettier --write .",
     "autofix": "npm run fmt:fix && npm run lint:fix",
-    "ai": "bash scripts/openhands.sh",
-    "ai:help": "bash scripts/openhands.sh --help",
     "prepare": "husky install"
   },
   "dependencies": {
