@@ -1,4 +1,10 @@
 #!/usr/bin/env sh
 # Husky v9+ hook (no sourcing husky.sh)
-# Use --no to prevent npx from installing packages interactively
+# Skip lint-staged if node_modules is not installed (e.g., in fresh clones or CI without install)
+if [ ! -d "node_modules" ]; then
+  echo "[husky] Skipping lint-staged (node_modules not installed)"
+  exit 0
+fi
+
+# Use local installation; --no prevents remote install
 npx --no -- lint-staged
