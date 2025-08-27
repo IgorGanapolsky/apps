@@ -49,6 +49,11 @@ jobs:
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
         run: |
+          if [ -z "${EXPO_TOKEN:-}" ]; then
+            echo "EXPO_TOKEN is not set; skipping EAS Build. Add EXPO_TOKEN to repo secrets to enable builds.";
+            exit 0;
+          fi
+
           PLATFORM="${{ inputs.platform || 'ios' }}"
           PROFILE="${{ inputs.profile || 'preview' }}"
           if [ -z "$PLATFORM" ]; then PLATFORM="ios"; fi

@@ -41,6 +41,11 @@ jobs:
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
         run: |
+          if [ -z "${EXPO_TOKEN:-}" ]; then
+            echo "EXPO_TOKEN is not set; skipping EAS Update. Add EXPO_TOKEN to repo secrets to enable updates.";
+            exit 0;
+          fi
+
           BRANCH="${{ inputs.branch || 'main' }}"
           MSG="${{ inputs.message || github.sha }}"
           if [ -z "$BRANCH" ]; then BRANCH="main"; fi
