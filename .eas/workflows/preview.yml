@@ -1,0 +1,26 @@
+name: Preview build and update
+
+on:
+  push:
+    branches:
+      - 'develop'
+      - 'feature/*'
+    paths:
+      - 'apps-template/**'
+
+jobs:
+  build_preview:
+    name: Build preview
+    type: build
+    params:
+      platform: all
+      profile: preview
+
+  update_preview:
+    name: Update preview
+    needs: build_preview
+    type: update
+    params:
+      branch: ${{{ github.ref_name }}}
+      message: "Preview update from ${{{ github.sha }}}"
+      channel: preview
