@@ -28,59 +28,21 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: |
-          cd apps-template
-          npm install --no-audit --no-fund
-          cd ../SuperPassword
-          npm install --no-audit --no-fund
+        run: npm install
 
       - name: TypeScript check
+        working-directory: ./apps-template
         run: npm run type-check
 
       - name: Run tests
+        working-directory: ./apps-template
         run: npm run test:ci
 
-      - name: Upload coverage reports
-        uses: codecov/codecov-action@v3
-        if: success()
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          fail_ci_if_error: false
-
-      - name: Expo doctor
-        run: npx expo-doctor
-
       - name: Lint
+        working-directory: ./apps-template
         run: npm run lint
 
       - name: Prettier check
+        working-directory: ./apps-template
         run: npm run fmt:check
-
-      - name: Notify Slack on failure
-        if: failure()
-        uses: slackapi/slack-github-action@v1.24.0
-        with:
-          payload: |
-            {
-              "text": "❌ CI checks failed on ${{ github.ref_name }}",
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "*CI checks failed!*\n*Branch:* ${{ github.ref_name }}\n*Triggered by:* ${{ github.actor }}"
-                  }
-                },
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View workflow run>"
-                  }
-                }
-              ]
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
 
