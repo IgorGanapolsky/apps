@@ -1,0 +1,61 @@
+{
+  "expo": {
+    "name": "apps-template",
+    "slug": "apps-template",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "appstemplate",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
+        }
+      ],
+      [
+        "sentry-expo",
+        {
+          "organization": "max-smith-kdp-llc",
+          "project": "4509329571315712"
+        }
+      ]
+    ],
+    "hooks": {
+      "postPublish": [
+        {
+          "file": "sentry-expo/upload-sourcemaps",
+          "config": {
+            "organization": "max-smith-kdp-llc",
+            "project": "4509329571315712",
+            "authToken": "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"
+          }
+        }
+      ]
+    },
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

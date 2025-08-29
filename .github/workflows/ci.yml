@@ -23,7 +23,17 @@ jobs:
         run: npm install --no-audit --no-fund
 
       - name: TypeScript check
-        run: npx tsc --noEmit
+        run: npm run type-check
+
+      - name: Run tests
+        run: npm run test:ci
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+        if: success()
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false
 
       - name: Expo doctor
         run: npx expo-doctor
@@ -32,7 +42,7 @@ jobs:
         run: npm run lint
 
       - name: Prettier check
-        run: npm run fmt
+        run: npm run fmt:check
 
       - name: Notify Slack on failure
         if: failure()
