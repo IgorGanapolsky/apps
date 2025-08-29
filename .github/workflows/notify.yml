@@ -1,0 +1,39 @@
+name: Notifications
+
+on:
+  workflow_run:
+    workflows: ['EAS Build', 'Code Quality', 'Security Scan']
+    types: [completed]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion != 'skipped' }}
+    
+    steps:
+      - name: Send Slack notification
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+              "text": "🔔 Workflow *${{ github.event.workflow_run.name }}* ${{ github.event.workflow_run.conclusion }}",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Workflow:* ${{ github.event.workflow_run.name }}\n*Status:* ${{ github.event.workflow_run.conclusion }}\n*Branch:* ${{ github.event.workflow_run.head_branch }}\n*Triggered by:* ${{ github.event.workflow_run.triggering_actor.login }}"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "<${{ github.event.workflow_run.html_url }}|View workflow run details>"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
