@@ -65,3 +65,31 @@ jobs:
           else
             eas build --platform "$PLATFORM" --profile "$PROFILE" --non-interactive
           fi
+
+      - name: Notify Slack on failure
+        if: failure()
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+              "text": "❌ EAS Build failed for ${{ inputs.platform || 'ios' }} (${{ inputs.profile || 'preview' }})",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*EAS Build failed!*\n*Platform:* ${{ inputs.platform || 'ios' }}\n*Profile:* ${{ inputs.profile || 'preview' }}\n*Triggered by:* ${{ github.actor }}"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View workflow run>"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
