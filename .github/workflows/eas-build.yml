@@ -3,93 +3,62 @@ name: EAS Build
 on:
   workflow_dispatch:
     inputs:
+      project:
+        description: "Project to build"
+        required: true
+        default: "apps-template"
+        type: choice
+        options: [apps-template, SuperPassword]
       platform:
-        description: "ios | android | all"
+        description: "Platform to build for"
         required: true
         default: "ios"
         type: choice
         options: [ios, android, all]
       profile:
-        description: "EAS build profile"
+        description: "Build profile"
         required: true
-        default: "preview"
+        default: "development"
         type: choice
-        options: [preview, production]
+        options: [development, preview, production]
   push:
     tags:
       - "v*"
 
 jobs:
   build:
+    name: Build App
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ github.event.inputs.project || 'apps-template' }}
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
-          cache: "npm"
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
 
-      - name: Install deps
-        run: npm ci --no-audit --no-fund
-
-      - name: Install EAS CLI
-        run: npm i -g eas-cli
-
-      - name: EAS whoami
-        env:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-        run: eas whoami || true
-
-      - name: Build
-        env:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-        run: |
-          if [ -z "${EXPO_TOKEN:-}" ]; then
-            echo "EXPO_TOKEN is not set; skipping EAS Build. Add EXPO_TOKEN to repo secrets to enable builds.";
-            exit 0;
-          fi
-
-          PLATFORM="${{ inputs.platform || 'ios' }}"
-          PROFILE="${{ inputs.profile || 'preview' }}"
-          if [ -z "$PLATFORM" ]; then PLATFORM="ios"; fi
-          if [ -z "$PROFILE" ]; then PROFILE="preview"; fi
-
-          if [ "$PLATFORM" = "all" ]; then
-            eas build --platform ios --profile "$PROFILE" --non-interactive
-            eas build --platform android --profile "$PROFILE" --non-interactive
-          else
-            eas build --platform "$PLATFORM" --profile "$PROFILE" --non-interactive
-          fi
-
-      - name: Notify Slack on failure
-        if: failure()
-        uses: slackapi/slack-github-action@v1.24.0
+      - name: Setup EAS
+        uses: expo/expo-github-action@v8
         with:
-          payload: |
-            {
-              "text": "❌ EAS Build failed for ${{ inputs.platform || 'ios' }} (${{ inputs.profile || 'preview' }})",
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "*EAS Build failed!*\n*Platform:* ${{ inputs.platform || 'ios' }}\n*Profile:* ${{ inputs.profile || 'preview' }}\n*Triggered by:* ${{ github.actor }}"
-                  }
-                },
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View workflow run>"
-                  }
-                }
-              ]
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build on EAS
+        run: |
+          if [ "${{ github.event.inputs.platform || 'ios' }}" = "all" ]; then
+            eas build --platform ios --profile ${{ github.event.inputs.profile || 'development' }} --non-interactive
+            eas build --platform android --profile ${{ github.event.inputs.profile || 'development' }} --non-interactive
+          else
+            eas build --platform ${{ github.event.inputs.platform || 'ios' }} --profile ${{ github.event.inputs.profile || 'development' }} --non-interactive
+          fi
