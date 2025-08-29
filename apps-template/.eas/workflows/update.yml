@@ -1,0 +1,18 @@
+name: Publish update
+
+on:
+  push:
+    branches:
+      - 'main'
+      - 'develop'
+    paths:
+      - 'apps-template/**'
+
+jobs:
+  update:
+    name: Publish update
+    type: update
+    params:
+      branch: ${{{ github.ref_name }}}
+      message: "Update from ${{{ github.sha }}}"
+      channel: ${{{ github.ref_name === 'main' ? 'production' : 'preview' }}}
