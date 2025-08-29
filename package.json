@@ -1,8 +1,11 @@
 {
-  "name": "rn-expo-template",
+  "name": "apps-monorepo",
   "version": "0.1.0",
   "private": true,
-  "main": "node_modules/expo/AppEntry.js",
+  "workspaces": [
+    "apps-template",
+    "SuperPassword"
+  ],
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",

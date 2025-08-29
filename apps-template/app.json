@@ -33,27 +33,8 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ],
-      [
-        "sentry-expo",
-        {
-          "organization": "max-smith-kdp-llc",
-          "project": "4509329571315712"
-        }
       ]
     ],
-    "hooks": {
-      "postPublish": [
-        {
-          "file": "sentry-expo/upload-sourcemaps",
-          "config": {
-            "organization": "max-smith-kdp-llc",
-            "project": "4509329571315712",
-            "authToken": "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"
-          }
-        }
-      ]
-    },
     "experiments": {
       "typedRoutes": true
     }

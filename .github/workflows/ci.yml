@@ -3,8 +3,16 @@ name: CI (Checks)
 on:
   push:
     branches: [ main ]
+    paths:
+      - 'apps-template/**'
+      - 'SuperPassword/**'
+      - '.github/workflows/**'
   pull_request:
     branches: [ main ]
+    paths:
+      - 'apps-template/**'
+      - 'SuperPassword/**'
+      - '.github/workflows/**'
 
 jobs:
   checks:
@@ -20,7 +28,11 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: |
+          cd apps-template
+          npm install --no-audit --no-fund
+          cd ../SuperPassword
+          npm install --no-audit --no-fund
 
       - name: TypeScript check
         run: npm run type-check

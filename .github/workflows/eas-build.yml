@@ -15,9 +15,19 @@ on:
         default: "preview"
         type: choice
         options: [preview, production]
+      project:
+        description: "Project to build"
+        required: true
+        default: "apps-template"
+        type: choice
+        options: [apps-template, SuperPassword]
   push:
     tags:
       - "v*"
+    paths:
+      - 'apps-template/**'
+      - 'SuperPassword/**'
+      - '.github/workflows/**'
 
 jobs:
   build:
@@ -35,7 +45,9 @@ jobs:
           cache: "npm"
 
       - name: Install deps
-        run: npm ci --no-audit --no-fund
+        run: |
+          cd ${{ inputs.project || 'apps-template' }}
+          npm ci --no-audit --no-fund
 
       - name: Install EAS CLI
         run: npm i -g eas-cli
