@@ -118,6 +118,8 @@ src/
 
 ### Using EAS Build
 
+#### Manual Builds
+
 1. Install EAS CLI:
 
 ```bash
@@ -141,6 +143,36 @@ eas build --platform ios
 ```bash
 eas build --platform android
 ```
+
+#### Automated CI/CD Builds
+
+This project supports automated builds via GitHub Actions in three ways:
+
+1. **Pull Request Labels**: Add one of these labels to your PR to trigger a build:
+   - `eas-build-ios:development` - iOS development build
+   - `eas-build-ios:preview` - iOS preview build
+   - `eas-build-ios:production` - iOS production build
+   - `eas-build-android:development` - Android development build
+   - `eas-build-android:preview` - Android preview build
+   - `eas-build-android:production` - Android production build
+
+2. **Manual Trigger**: Use GitHub Actions UI to trigger builds with custom parameters
+
+3. **Release Tags**: Pushing a tag starting with 'v' (e.g., v1.0.0) automatically triggers production builds
+
+##### Required Secrets
+
+Set these secrets in your GitHub repository settings:
+
+- `EXPO_TOKEN` - Your Expo access token (required)
+- `APPLE_TEAM_ID` - Your Apple Developer Team ID (required for iOS builds)
+- `EXPO_APPLE_APP_SPECIFIC_PASSWORD` - App-specific password for your Apple ID (required for iOS builds)
+
+##### Build Profiles
+
+- **development**: Debug builds with development client
+- **preview**: Internal testing builds with development features
+- **production**: Release builds for app store submission
 
 ## App Store Configuration
 
